@@ -1,0 +1,28 @@
+# Rahasia & konfigurasi environment — JANGAN pernah di-commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# Dependensi & build
+node_modules/
+dist/
+build/
+out/
+.vercel/
+.next/
+
+# OS & editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Log
+*.log
+npm-debug.log*
+
+# Screenshot lokal
+artifacts/

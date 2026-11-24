@@ -26,7 +26,7 @@
       roast: 'Medium',
       flavor: 'Cokelat hitam, jeruk manis, keasaman seimbang',
       description: 'Biji Arabica dari kebun dataran tinggi Gayo, disangrai sedang agar rasa cokelat dan buahnya seimbang. Cocok untuk V60, Aeropress, maupun espresso.',
-      image: 'assets/product-arabica-premium.svg',
+      image: 'assets/photos/product-01.jpg',
       active: true,
       createdAt: '2026-01-12T08:00:00.000Z'
     },
@@ -42,7 +42,7 @@
       roast: 'Light',
       flavor: 'Anggur merah, buah beri, floral',
       description: 'Fermentasi terkontrol menghasilkan aroma wine yang khas. Lot terbatas dari kebun mitra di Bener Meriah.',
-      image: 'assets/product-wine-process.svg',
+      image: 'assets/photos/product-02.jpg',
       active: true,
       createdAt: '2026-02-02T08:00:00.000Z'
     },
@@ -58,7 +58,7 @@
       roast: 'Medium Dark',
       flavor: 'Cokelat pekat, rempah, body tebal',
       description: 'Kopi bubuk harian dengan body tebal dan rasa cokelat pekat. Nikmat diseduh dengan tubruk atau moka pot.',
-      image: 'assets/product-ground-classic.svg',
+      image: 'assets/photos/product-03.jpg',
       active: true,
       createdAt: '2026-01-20T08:00:00.000Z'
     },
@@ -74,7 +74,7 @@
       roast: 'Dark',
       flavor: 'Kacang panggang, tembakau, pahit manis',
       description: 'Robusta dengan body kuat dan aroma kacang panggang. Stok sedang kosong dan akan tersedia kembali setelah panen berikutnya.',
-      image: 'assets/product-robusta.svg',
+      image: 'assets/photos/product-04.jpg',
       active: true,
       createdAt: '2026-01-28T08:00:00.000Z'
     },
@@ -90,7 +90,7 @@
       roast: 'Medium Light',
       flavor: 'Madu, karamel, apel',
       description: 'Proses honey memberi manis alami seperti madu dan karamel. Disarankan diseduh manual brew.',
-      image: 'assets/product-honey.svg',
+      image: 'assets/photos/product-05.jpg',
       active: true,
       createdAt: '2026-02-18T08:00:00.000Z'
     },
@@ -106,7 +106,7 @@
       roast: 'Medium',
       flavor: 'Cokelat susu, manis rendah, segar',
       description: 'Konsentrat cold brew hasil ekstraksi 18 jam. Campur dengan air atau susu sesuai selera, simpan di lemari pendingin.',
-      image: 'assets/product-cold-brew.svg',
+      image: 'assets/photos/product-06.jpg',
       active: true,
       createdAt: '2026-03-05T08:00:00.000Z'
     },
@@ -122,7 +122,7 @@
       roast: 'Medium',
       flavor: 'Jeruk, karamel, teh hitam',
       description: 'Kopi praktis dalam kantong drip. Cukup tuang air panas, nikmati kopi Gayo di mana saja.',
-      image: 'assets/product-drip-bag.svg',
+      image: 'assets/photos/product-07.jpg',
       active: true,
       createdAt: '2026-03-12T08:00:00.000Z'
     },
@@ -138,7 +138,7 @@
       roast: 'Medium',
       flavor: 'Cokelat, rempah, buah kering',
       description: 'Paket berisi dua kemasan kopi pilihan dalam kotak oleh-oleh. Cocok untuk hadiah.',
-      image: 'assets/product-gift-set.svg',
+      image: 'assets/photos/product-08.jpg',
       active: true,
       createdAt: '2026-04-01T08:00:00.000Z'
     }

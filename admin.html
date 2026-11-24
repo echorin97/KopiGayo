@@ -73,8 +73,8 @@
         </form>
 
         <div class="login-hint">
-          <strong>Akun demo:</strong> username <strong>admin</strong> · password <strong>admin</strong>.<br />
-          Kredensial ini hanya untuk demonstrasi. Untuk produksi, autentikasi wajib dipindahkan ke backend dengan password ter-hash dan session yang aman.
+          <strong>Keamanan:</strong> password diverifikasi sebagai hash SHA-256, login dibatasi 5 percobaan per 10 menit, dan sesi berakhir otomatis setelah 30 menit tanpa aktivitas.<br />
+          Demo statis ini belum punya backend — kredensial demo ada di <code>README.md</code>. Untuk produksi, autentikasi wajib dipindahkan ke server.
         </div>
 
         <a class="login-back" href="index.html">
@@ -181,6 +181,7 @@
   <div class="modal-root" id="modalRoot" aria-hidden="true"></div>
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
+  <script src="js/security.js"></script>
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
   <script src="js/admin.js"></script>

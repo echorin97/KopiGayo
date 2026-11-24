@@ -7,9 +7,9 @@
   var S = window.KGStore;
   if (!S) return;
 
-  var DEMO_USER = 'admin';
-  var DEMO_PASS = 'admin';
+  var SEC = window.KGSecurity;
   var SESSION_KEY = 'kg_admin_session';
+  var DEFAULT_PRODUCT_IMAGE = 'assets/photos/product-01.jpg';
 
   var state = {
     view: 'dashboard',
@@ -73,8 +73,16 @@
     S.seed();
     bindLogin();
     bindShell();
+    startSessionWatch();
     startClock();
     applyBranding();
+
+    /* Audit log: setiap perubahan data toko dari dashboard dicatat. */
+    window.addEventListener('kg:store', function (event) {
+      if (!isLoggedIn() || !SEC) return;
+      var key = event.detail && event.detail.key;
+      SEC.log('data.write', 'Perubahan data: ' + String(key || '').replace('kg_', ''));
+    });
 
     if (isLoggedIn()) {
       showApp();
@@ -92,43 +100,73 @@
 
   /* ==================== AUTENTIKASI ==================== */
   function isLoggedIn() {
-    try {
-      return window.sessionStorage.getItem(SESSION_KEY) === '1';
-    } catch (err) {
-      return memorySession;
-    }
-  }
-
-  function setLoggedIn(value) {
-    memorySession = value;
-    try {
-      if (value) window.sessionStorage.setItem(SESSION_KEY, '1');
-      else window.sessionStorage.removeItem(SESSION_KEY);
-    } catch (err) { /* sessionStorage tidak tersedia, gunakan memori */ }
+    return !!(SEC && SEC.isSessionValid());
   }
 
   function bindLogin() {
     var form = $('#loginForm');
     var error = $('#loginError');
+    var errorText = error.querySelector('span');
     var toggle = $('#togglePassword');
     var password = $('#loginPassword');
     var username = $('#loginUsername');
+    var submit = form.querySelector('button[type="submit"]');
+
+    if (!SEC) {
+      if (errorText) errorText.textContent = 'Modul keamanan gagal dimuat. Muat ulang halaman.';
+      error.classList.add('show');
+      submit.disabled = true;
+      return;
+    }
+
+    function showError(message) {
+      if (errorText) errorText.textContent = message;
+      error.classList.add('show');
+    }
+
+    /* Kunci tombol login selama masa tenggang rate limiting masih berjalan. */
+    function applyLock() {
+      var gate = SEC.loginState();
+      if (gate.locked) {
+        submit.disabled = true;
+        showError('Terlalu banyak percobaan login. Coba lagi dalam ' + SEC.formatDuration(gate.msLeft) + '.');
+        return true;
+      }
+      if (submit.disabled) {
+        submit.disabled = false;
+        error.classList.remove('show');
+      }
+      return false;
+    }
+
+    applyLock();
+    window.setInterval(applyLock, 1000);
 
     form.addEventListener('submit', function (event) {
       event.preventDefault();
+      if (applyLock()) return;
+
       var user = username.value.trim();
       var pass = password.value;
-      if (user === DEMO_USER && pass === DEMO_PASS) {
-        setLoggedIn(true);
+
+      if (SEC.verifyCredentials(user, pass)) {
+        SEC.clearFailures();
+        SEC.startSession();
+        SEC.log('login.success', 'Admin berhasil masuk dashboard');
         error.classList.remove('show');
         form.reset();
         password.type = 'password';
         showApp();
         toast('Login berhasil', 'Selamat datang di Dashboard Admin.', 'success');
       } else {
-        error.classList.add('show');
+        var gate = SEC.registerFailure();
+        SEC.log('login.failed', 'Percobaan login gagal untuk username "' + SEC.sanitizeText(user, 40) + '"');
+        showError(gate.locked
+          ? 'Terlalu banyak percobaan. Login dikunci ' + SEC.formatDuration(gate.msLeft) + '.'
+          : 'Username atau password salah. Sisa percobaan: ' + gate.attemptsLeft + ' dari ' + SEC.MAX_ATTEMPTS + '.');
         password.focus();
         password.select();
+        applyLock();
       }
     });
 
@@ -159,6 +197,7 @@
   }
 
   function showApp() {
+    if (!isLoggedIn()) { showLogin(); return; }
     $('#loginView').hidden = true;
     $('#appView').hidden = false;
     applyBranding();
@@ -167,11 +206,32 @@
     setView(VIEWS[hashView] ? hashView : 'dashboard');
   }
 
-  function logout() {
-    setLoggedIn(false);
+  function logout(expired) {
+    if (SEC) {
+      SEC.log(expired ? 'session.expired' : 'logout', expired ? 'Sesi berakhir otomatis' : 'Admin logout');
+      SEC.endSession();
+    }
     state.view = 'dashboard';
     showLogin();
-    toast('Anda telah logout', 'Dashboard tidak dapat diakses tanpa login.', 'info');
+    toast(
+      expired ? 'Sesi berakhir' : 'Anda telah logout',
+      expired ? 'Sesi berakhir karena tidak ada aktivitas. Silakan login kembali.' : 'Dashboard tidak dapat diakses tanpa login.',
+      'info'
+    );
+  }
+
+  /* Sesi berakhir otomatis setelah 30 menit tanpa aktivitas (maks. 8 jam). */
+  function startSessionWatch() {
+    if (!SEC) return;
+    ['click', 'keydown', 'touchstart'].forEach(function (type) {
+      window.addEventListener(type, function () {
+        if (isLoggedIn()) SEC.touchSession();
+      }, true);
+    });
+    window.setInterval(function () {
+      if (!$('#appView') || $('#appView').hidden) return;
+      if (!SEC.isSessionValid()) logout(true);
+    }, 20000);
   }
 
   function bindShell() {
@@ -527,10 +587,22 @@
 
   function handleImageFile(file, callback) {
     if (!file) return;
-    if (!/^image\//.test(file.type)) {
-      toast('Format tidak didukung', 'Pilih berkas gambar (JPG, PNG, atau WebP).', 'error');
+    if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) {
+      toast('Format tidak didukung', 'Hanya JPG, PNG, WebP, atau GIF yang diizinkan.', 'error');
       return;
     }
+    if (file.size > 3 * 1024 * 1024) {
+      toast('Berkas terlalu besar', 'Ukuran gambar maksimal 3 MB.', 'error');
+      return;
+    }
+    var safeCallback = function (dataUrl) {
+      var safe = SEC ? SEC.safeImageUrl(dataUrl) : dataUrl;
+      if (!safe) {
+        toast('Gambar ditolak', 'Berkas tidak dikenali sebagai gambar yang aman.', 'error');
+        return;
+      }
+      callback(safe);
+    };
     var reader = new FileReader();
     reader.onload = function (event) {
       var image = new Image();
@@ -542,12 +614,12 @@
         canvas.height = Math.round(image.height * scale);
         canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
         try {
-          callback(canvas.toDataURL('image/jpeg', 0.82));
+          safeCallback(canvas.toDataURL('image/jpeg', 0.82));
         } catch (err) {
-          callback(event.target.result);
+          safeCallback(event.target.result);
         }
       };
-      image.onerror = function () { callback(event.target.result); };
+      image.onerror = function () { safeCallback(event.target.result); };
       image.src = event.target.result;
     };
     reader.onerror = function () {
@@ -885,17 +957,17 @@
     clearMarks(form);
     var editingId = form.getAttribute('data-id');
     var data = {
-      name: form.elements.name.value.trim(),
+      name: SEC.sanitizeText(form.elements.name.value, 80),
       categoryId: form.elements.categoryId.value,
-      price: Number(form.elements.price.value),
-      weight: form.elements.weight.value.trim(),
-      stock: Number(form.elements.stock.value),
-      origin: form.elements.origin.value.trim(),
-      process: form.elements.process.value.trim(),
-      roast: form.elements.roast.value,
-      flavor: form.elements.flavor.value.trim(),
-      description: form.elements.description.value.trim(),
-      image: state.productImage || form.elements.imageUrl.value.trim() || 'assets/product-arabica-premium.svg',
+      price: SEC.clampNumber(form.elements.price.value, 1, 100000000, 0),
+      weight: SEC.sanitizeText(form.elements.weight.value, 30),
+      stock: SEC.clampInt(form.elements.stock.value, 0, 1000000, -1),
+      origin: SEC.sanitizeText(form.elements.origin.value, 80),
+      process: SEC.sanitizeText(form.elements.process.value, 60),
+      roast: SEC.sanitizeText(form.elements.roast.value, 30),
+      flavor: SEC.sanitizeText(form.elements.flavor.value, 200),
+      description: SEC.sanitizeMultiline(form.elements.description.value, 1200),
+      image: SEC.safeImageUrl(state.productImage || form.elements.imageUrl.value, 600000) || DEFAULT_PRODUCT_IMAGE,
       active: form.elements.active.value === 'true'
     };
 
@@ -1490,21 +1562,55 @@
       'Versi demo ini menyimpan produk, kategori, stok, pesanan, dan pengaturan pada <strong>localStorage</strong> — hanya di browser yang dipakai admin. ' +
       'Data tidak terlihat oleh pengunjung lain dan tidak aman untuk toko sungguhan. Untuk produksi, pindahkan penyimpanan ke backend + database (MySQL/PostgreSQL) ' +
       'dengan autentikasi password ter-hash dan session aman. Struktur data di <code>js/store.js</code> sudah dipisahkan agar mudah diganti dengan API.</p>' +
+      '</div></div>' +
+      renderSecurityPanel();
+  }
+
+  function renderSecurityPanel() {
+    var status = SEC ? SEC.sessionStatus() : { valid: false, idleLeft: 0, absoluteLeft: 0 };
+    var gate = SEC ? SEC.loginState() : { locked: false, attemptsLeft: 0 };
+    var entries = SEC ? SEC.getLog(10) : [];
+
+    function fmt(ts) {
+      try { return new Date(ts).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }); }
+      catch (err) { return '-'; }
+    }
+
+    var rows = entries.length ? entries.map(function (item) {
+      return '<li><span>' + e(item.action) + '</span><small>' + e(fmt(item.t)) + ' \u00b7 ' + e(item.detail) + '</small></li>';
+    }).join('') : '<li><span>Belum ada aktivitas</span><small>Log terisi setelah login dan perubahan data.</small></li>';
+
+    var rateText = SEC
+      ? (gate.locked ? 'Terkunci ' + SEC.formatDuration(gate.msLeft) : gate.attemptsLeft + ' dari ' + SEC.MAX_ATTEMPTS + ' percobaan tersisa')
+      : 'Modul keamanan tidak termuat';
+    var idleText = SEC && status.valid ? SEC.formatDuration(status.idleLeft) : 'tidak ada sesi aktif';
+
+    return '<div class="panel security-panel"><div class="panel-head"><div><h3>Keamanan &amp; Log Aktivitas</h3>' +
+      '<p>Status sesi dan 10 aktivitas terakhir</p></div></div><div class="panel-body">' +
+      '<ul class="security-stats">' +
+      '<li><strong>Hash password</strong><span>SHA-256 \u00b7 2.000 iterasi + salt</span></li>' +
+      '<li><strong>Rate limit login</strong><span>' + e(rateText) + '</span></li>' +
+      '<li><strong>Sesi aktif</strong><span>Berakhir otomatis dalam ' + e(idleText) + ' tanpa aktivitas</span></li>' +
+      '<li><strong>Batas sesi</strong><span>Maksimum 8 jam sejak login</span></li>' +
+      '</ul>' +
+      '<h4 class="security-log-title">Log aktivitas</h4>' +
+      '<ul class="security-log">' + rows + '</ul>' +
+      '<p class="form-hint" style="margin:14px 0 0">Log disimpan maksimal 200 entri dan dibersihkan otomatis setelah 90 hari.</p>' +
       '</div></div>';
   }
 
   function saveSettingsForm(form) {
     clearMarks(form);
     var data = {
-      storeName: form.elements.storeName.value.trim(),
-      whatsapp: S.normalizePhone(form.elements.whatsapp.value),
-      email: form.elements.email.value.trim(),
-      openHours: form.elements.openHours.value.trim(),
-      tagline: form.elements.tagline.value.trim(),
-      address: form.elements.address.value.trim(),
-      description: form.elements.description.value.trim(),
-      shipping: form.elements.shipping.value.trim(),
-      logo: state.settingsLogo || form.elements.logoUrl.value.trim()
+      storeName: SEC.sanitizeText(form.elements.storeName.value, 60),
+      whatsapp: SEC.sanitizeText(S.normalizePhone(form.elements.whatsapp.value), 20),
+      email: SEC.sanitizeText(form.elements.email.value, 120),
+      openHours: SEC.sanitizeText(form.elements.openHours.value, 80),
+      tagline: SEC.sanitizeText(form.elements.tagline.value, 140),
+      address: SEC.sanitizeText(form.elements.address.value, 160),
+      description: SEC.sanitizeMultiline(form.elements.description.value, 600),
+      shipping: SEC.sanitizeMultiline(form.elements.shipping.value, 400),
+      logo: SEC.safeImageUrl(state.settingsLogo || form.elements.logoUrl.value)
     };
     var errors = 0;
     if (!data.storeName) { markInvalid(form, 'storeName', 'Nama toko wajib diisi.'); errors++; }

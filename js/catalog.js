@@ -330,8 +330,10 @@
     var phoneInput = document.getElementById('customerPhone');
     var noteInput = document.getElementById('customerNote');
 
-    var name = nameInput.value.trim();
-    var phoneDigits = S.normalizePhone(phoneInput.value);
+    var SEC = window.KGSecurity;
+    var name = SEC ? SEC.sanitizeText(nameInput.value, 60) : nameInput.value.trim();
+    var phoneDigits = S.normalizePhone(phoneInput.value).slice(0, 15);
+    var note = SEC ? SEC.sanitizeMultiline(noteInput.value, 400) : noteInput.value.trim();
     var valid = true;
 
     nameField.classList.remove('invalid');
@@ -340,7 +342,7 @@
       nameField.classList.add('invalid');
       valid = false;
     }
-    if (phoneDigits.length < 10) {
+    if (!/^[\d]{10,15}$/.test(phoneDigits)) {
       phoneField.classList.add('invalid');
       valid = false;
     }
@@ -376,7 +378,7 @@
     var order;
     try {
       order = S.addOrder({
-        customer: { name: name, phone: phoneDigits, note: noteInput.value.trim() },
+        customer: { name: name, phone: phoneDigits, note: note },
         items: items,
         itemCount: items.reduce(function (sum, item) { return sum + item.qty; }, 0),
         total: total
@@ -394,7 +396,7 @@
       'Total: ' + S.formatRupiah(total) + '\n' +
       'Nama: ' + name + '\n' +
       'No. WhatsApp: ' + phoneDigits +
-      (noteInput.value.trim() ? '\nAlamat/Catatan: ' + noteInput.value.trim() : '') +
+      (note ? '\nAlamat/Catatan: ' + note : '') +
       '\n\nNomor pesanan: ' + order.id;
 
     var waUrl = 'https://wa.me/' + S.normalizePhone(settings.whatsapp) + '?text=' + encodeURIComponent(message);
@@ -529,6 +531,21 @@
     });
 
     document.getElementById('checkoutForm').addEventListener('submit', checkout);
+
+    /* Kebijakan privasi: pengunjung bisa menghapus seluruh data demo di browser ini. */
+    var clearDataBtn = document.getElementById('clearLocalData');
+    if (clearDataBtn) {
+      clearDataBtn.addEventListener('click', function () {
+        if (!window.confirm('Hapus semua data toko dan pesanan yang tersimpan di browser ini? Tindakan ini tidak bisa dibatalkan.')) return;
+        try {
+          Object.keys(window.localStorage).forEach(function (key) {
+            if (key.indexOf('kg_') === 0) window.localStorage.removeItem(key);
+          });
+        } catch (err) { /* localStorage tidak tersedia */ }
+        toast('Data browser dihapus', 'Katalog akan dimuat ulang dengan data awal.', 'info');
+        window.setTimeout(function () { window.location.reload(); }, 800);
+      });
+    }
 
     el.productModal.addEventListener('click', function (event) {
       if (event.target === el.productModal) {

@@ -1010,3 +1010,30 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ---------- Kebijakan privasi ---------- */
+.privacy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 26px;
+}
+.privacy-card {
+  background: #fff;
+  border: 1px solid rgba(46, 29, 18, 0.1);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(46, 29, 18, 0.04);
+}
+.privacy-card h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--dark);
+}
+.privacy-card p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #5d4c3c;
+}
+.privacy-card .btn { margin-top: 14px; }

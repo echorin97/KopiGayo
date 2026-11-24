@@ -150,7 +150,7 @@
       roast: String(data.roast || '').trim(),
       flavor: String(data.flavor || '').trim(),
       description: String(data.description || '').trim(),
-      image: String(data.image || '').trim() || 'assets/product-arabica-premium.svg',
+      image: String(data.image || '').trim() || 'assets/photos/product-01.jpg',
       active: data.active !== false,
       createdAt: data.createdAt || new Date().toISOString()
     };

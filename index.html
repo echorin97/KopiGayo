@@ -88,7 +88,7 @@
         </div>
         <div class="hero-media">
           <div class="frame">
-            <img src="assets/hero.svg" alt="Perkebunan kopi Gayo di dataran tinggi Aceh saat matahari terbit" />
+            <img src="assets/photos/hero.jpg" alt="Pohon kopi yang terawat di perkebunan Takengon, Aceh Tengah" />
           </div>
           <div class="hero-float">
             <span class="ico">
@@ -162,7 +162,7 @@
     <section class="section story" id="cerita">
       <div class="container">
         <div class="story-media">
-          <img src="assets/story.svg" alt="Buah kopi merah di cabang perkebunan Gayo" />
+          <img src="assets/photos/story.jpg" alt="Hamparan kebun kopi di dataran tinggi Takengon, Aceh" />
           <div class="story-tag">
             <strong>1.200 m</strong>
             <span>Ketinggian tanam</span>
@@ -191,20 +191,20 @@
           <p>Klik gambar untuk melihat lebih besar.</p>
         </div>
         <div class="gallery-grid" id="galleryGrid">
-          <button class="gallery-item" data-img="assets/hero.svg" data-caption="Perkebunan kopi di dataran tinggi Gayo">
-            <img src="assets/hero.svg" alt="Perkebunan kopi Gayo" loading="lazy" />
+          <button class="gallery-item" data-img="assets/photos/hero.jpg" data-caption="Perkebunan kopi di dataran tinggi Takengon">
+            <img src="assets/photos/hero.jpg" alt="Perkebunan kopi Takengon" loading="lazy" />
           </button>
-          <button class="gallery-item" data-img="assets/product-honey.svg" data-caption="Biji kopi honey process">
-            <img src="assets/product-honey.svg" alt="Biji kopi honey process" loading="lazy" />
+          <button class="gallery-item" data-img="assets/photos/product-05.jpg" data-caption="Biji kopi honey process">
+            <img src="assets/photos/product-05.jpg" alt="Biji kopi honey process" loading="lazy" />
           </button>
-          <button class="gallery-item" data-img="assets/product-ground-classic.svg" data-caption="Kopi bubuk siap seduh">
-            <img src="assets/product-ground-classic.svg" alt="Kopi bubuk Gayo" loading="lazy" />
+          <button class="gallery-item" data-img="assets/photos/product-03.jpg" data-caption="Biji kopi hasil sangrai">
+            <img src="assets/photos/product-03.jpg" alt="Biji kopi sangrai" loading="lazy" />
           </button>
-          <button class="gallery-item" data-img="assets/story.svg" data-caption="Buah kopi merah siap petik">
-            <img src="assets/story.svg" alt="Buah kopi merah" loading="lazy" />
+          <button class="gallery-item" data-img="assets/photos/gallery-01.jpg" data-caption="Secangkir kopi hitam Gayo">
+            <img src="assets/photos/gallery-01.jpg" alt="Secangkir kopi hitam" loading="lazy" />
           </button>
-          <button class="gallery-item" data-img="assets/product-drip-bag.svg" data-caption="Seduhan drip coffee bag">
-            <img src="assets/product-drip-bag.svg" alt="Drip coffee bag" loading="lazy" />
+          <button class="gallery-item" data-img="assets/photos/product-07.jpg" data-caption="Seduhan manual pour over">
+            <img src="assets/photos/product-07.jpg" alt="Seduhan pour over" loading="lazy" />
           </button>
         </div>
       </div>
@@ -279,6 +279,7 @@
         <div class="footer-col">
           <h4>Bantuan</h4>
           <a href="admin.html" target="_blank" rel="noopener">Login Admin</a>
+          <a href="#privasi">Kebijakan privasi</a>
           <a href="#kontak">Cara pemesanan</a>
           <a href="#kontak">Pengiriman</a>
           <a href="#kontak">Pertanyaan umum</a>
@@ -292,6 +293,36 @@
           </ul>
         </div>
       </div>
+    <!-- Kebijakan privasi -->
+    <section class="section privacy" id="privasi">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow">Privasi</span>
+          <h2>Kebijakan Privasi</h2>
+          <p>Transparan soal data apa yang kami kumpulkan dan ke mana perginya.</p>
+        </div>
+        <div class="privacy-grid">
+          <article class="privacy-card">
+            <h3>Data yang dikumpulkan</h3>
+            <p>Hanya <strong>nama, nomor WhatsApp, dan alamat/catatan</strong> yang Anda isi sendiri di formulir checkout. Tidak ada pelacakan iklan, tidak ada cookie pihak ketiga, dan tidak ada data pembayaran.</p>
+          </article>
+          <article class="privacy-card">
+            <h3>Di mana data disimpan</h3>
+            <p>Versi demo ini menyimpan pesanan di <strong>localStorage browser Anda</strong> dan tidak mengirimkannya ke server. Pesan pesanan dikirim melalui aplikasi WhatsApp Anda sendiri.</p>
+          </article>
+          <article class="privacy-card">
+            <h3>Cara data digunakan</h3>
+            <p>Data dipakai untuk memproses pesanan, mengonfirmasi stok, dan menghubungi Anda soal pengiriman. Kami tidak menjual atau membagikan data ke pihak lain.</p>
+          </article>
+          <article class="privacy-card">
+            <h3>Hak Anda</h3>
+            <p>Anda bisa meminta pesanan dihapus atau berhenti dihubungi. Pada versi demo, hapus seluruh data yang tersimpan di browser ini kapan saja.</p>
+            <button class="btn btn-outline btn-sm" id="clearLocalData" type="button">Hapus data browser</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
       <div class="footer-bottom">
         <span>© <span id="footerYear">2026</span> <span data-store-name>Jualan Kopi Gayo</span>. Seluruh hak cipta dilindungi.</span>
         <span>Dibuat dengan kopi dari dataran tinggi Gayo.</span>
@@ -375,6 +406,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 1 1 16.1-3.8z"/></svg>
   </a>
 
+  <script src="js/security.js"></script>
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
   <script src="js/catalog.js"></script>
