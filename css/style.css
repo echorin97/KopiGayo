@@ -1210,3 +1210,114 @@ h1, h2, h3, h4 {
   .ticker-track, .ticker-item.enter, .cart-count.pop { animation: none !important; }
   .detail-media img, .product-thumb img { transition: none; }
 }
+
+/* ---------- Dekorasi: biji kopi melayang di sudut halaman ---------- */
+.bean-field {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bean-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.bean {
+  position: absolute;
+  display: block;
+  width: var(--bean-size, 48px);
+  height: var(--bean-size, 48px);
+  color: rgba(111, 74, 47, .3);
+  mix-blend-mode: multiply;
+  animation: beanFloat var(--bean-dur, 18s) ease-in-out infinite alternate, beanIn 1.4s ease both;
+  animation-delay: 0s, var(--bean-delay, 0s);
+  will-change: transform;
+}
+.bean svg { width: 100%; height: 100%; display: block; }
+
+.bean-1 { left: -20px; top: 20vh; --bean-size: 58px; --bean-dur: 19s; --bean-delay: .2s; }
+.bean-2 { left: 34px; top: 52vh; --bean-size: 30px; --bean-dur: 22s; --bean-delay: 1.4s; }
+.bean-3 { right: -22px; top: 26vh; --bean-size: 66px; --bean-dur: 20s; --bean-delay: .8s; }
+.bean-4 { right: 30px; top: 58vh; --bean-size: 36px; --bean-dur: 24s; --bean-delay: 2s; }
+.bean-5 { left: -10px; bottom: 20vh; --bean-size: 46px; --bean-dur: 21s; --bean-delay: 1s; }
+.bean-6 { right: -14px; bottom: 12vh; --bean-size: 60px; --bean-dur: 18s; --bean-delay: .5s; }
+.bean-7 { left: 52px; bottom: 6vh; --bean-size: 26px; --bean-dur: 26s; --bean-delay: 2.6s; }
+.bean-8 { right: 58px; top: 44vh; --bean-size: 28px; --bean-dur: 23s; --bean-delay: 1.8s; }
+
+@keyframes beanFloat {
+  from { transform: translate3d(0, 0, 0) rotate(-14deg) scale(1); }
+  to { transform: translate3d(16px, -30px, 0) rotate(18deg) scale(1.07); }
+}
+@keyframes beanIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---------- Glow bloom lembut pada judul ---------- */
+.brand-name { animation: brandGlow 7s ease-in-out infinite; }
+@keyframes brandGlow {
+  0%, 100% { text-shadow: 0 0 0 rgba(200, 155, 90, 0); }
+  50% { text-shadow: 0 0 14px rgba(200, 155, 90, .45), 0 0 30px rgba(200, 155, 90, .2); }
+}
+
+.hero h1 { animation: titleGlow 8s ease-in-out infinite; }
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(200, 155, 90, .16), 0 1px 2px rgba(46, 29, 18, .06); }
+  50% { text-shadow: 0 0 34px rgba(200, 155, 90, .44), 0 0 76px rgba(200, 155, 90, .22), 0 1px 2px rgba(46, 29, 18, .06); }
+}
+.hero h1 em { animation: emGlow 6.5s ease-in-out infinite; }
+@keyframes emGlow {
+  0%, 100% { text-shadow: 0 0 12px rgba(139, 94, 60, .2); }
+  50% { text-shadow: 0 0 22px rgba(200, 155, 90, .6), 0 0 46px rgba(200, 155, 90, .3); }
+}
+
+/* ---------- Cahaya lembut yang bergerak di latar hero ---------- */
+.hero::before { animation: orbDrift 20s ease-in-out infinite alternate; }
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 94, 60, .16), transparent 70%);
+  bottom: -210px;
+  left: -130px;
+  animation: orbDrift2 24s ease-in-out infinite alternate;
+}
+@keyframes orbDrift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-42px, 34px, 0) scale(1.08); }
+}
+@keyframes orbDrift2 {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(52px, -40px, 0) scale(1.12); }
+}
+
+/* ---------- Detail kecil: titik hidup & tombol utama berdenyut ---------- */
+.hero-badge .dot { animation: dotPulse 2.8s ease-out infinite; }
+@keyframes dotPulse {
+  0% { box-shadow: 0 0 0 0 rgba(47, 125, 83, .45); }
+  70% { box-shadow: 0 0 0 9px rgba(47, 125, 83, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(47, 125, 83, 0); }
+}
+.hero-cta .btn-primary { animation: ctaGlow 4s ease-in-out infinite; }
+@keyframes ctaGlow {
+  0%, 100% { box-shadow: 0 6px 18px rgba(46, 29, 18, .16); }
+  50% { box-shadow: 0 12px 30px rgba(111, 74, 47, .3), 0 0 0 6px rgba(200, 155, 90, .12); }
+}
+
+@media (max-width: 1280px) {
+  .bean-2, .bean-4, .bean-7, .bean-8 { display: none; }
+}
+
+@media (max-width: 900px) {
+  .bean { color: rgba(111, 74, 47, .17); }
+  .bean-2, .bean-4, .bean-7, .bean-8 { display: none; }
+  .bean-1, .bean-3, .bean-5, .bean-6 { --bean-size: 40px; }
+  .bean-1, .bean-5 { left: -28px; }
+  .bean-3, .bean-6 { right: -28px; }
+  .hero::after { width: 320px; height: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bean, .brand-name, .hero h1, .hero h1 em, .hero::before, .hero::after,
+  .hero-badge .dot, .hero-cta .btn-primary { animation: none !important; }
+}
