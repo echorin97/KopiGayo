@@ -81,6 +81,35 @@
       if (getItem(KEYS.orders) === null) write(KEYS.orders, []);
     }
     migrateSettings();
+    migrateProductImages();
+  }
+
+  /* Ilustrasi SVG lama diganti foto asli. Hanya path bawaan yang diubah,
+     gambar hasil unggahan atau URL milik admin tidak disentuh. */
+  var IMAGE_MIGRATION = {
+    'assets/product-arabica-premium.svg': 'assets/photos/product-01.jpg',
+    'assets/product-wine-process.svg': 'assets/photos/product-02.jpg',
+    'assets/product-ground-classic.svg': 'assets/photos/product-03.jpg',
+    'assets/product-robusta.svg': 'assets/photos/product-04.jpg',
+    'assets/product-honey.svg': 'assets/photos/product-05.jpg',
+    'assets/product-cold-brew.svg': 'assets/photos/product-06.jpg',
+    'assets/product-drip-bag.svg': 'assets/photos/product-07.jpg',
+    'assets/product-gift-set.svg': 'assets/photos/product-08.jpg',
+    'assets/hero.svg': 'assets/photos/hero.jpg',
+    'assets/story.svg': 'assets/photos/story.jpg'
+  };
+
+  function migrateProductImages() {
+    var list = getProducts();
+    var changed = 0;
+    list.forEach(function (product) {
+      var replacement = IMAGE_MIGRATION[product.image];
+      if (replacement) {
+        product.image = replacement;
+        changed += 1;
+      }
+    });
+    if (changed) setItem(KEYS.products, JSON.stringify(list));
   }
 
   function migrateSettings() {

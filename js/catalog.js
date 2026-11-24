@@ -614,7 +614,7 @@
       var target = event.target;
       if (target && target.tagName === 'IMG' && !target.dataset.fallback) {
         target.dataset.fallback = '1';
-        target.src = 'assets/product-arabica-premium.svg';
+        target.src = 'assets/photos/product-01.jpg';
       }
     }, true);
 
