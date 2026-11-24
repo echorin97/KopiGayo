@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin — Jualan Kopi Gayo</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <!-- ============ LOGIN ============ -->
+  <section class="login-page" id="loginView">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-row">
+          <img src="assets/logo.svg" alt="Logo Jualan Kopi Gayo" id="loginLogo" />
+          <div>
+            <div class="brand-name" id="loginBrandName">Jualan Kopi Gayo</div>
+            <div class="brand-sub">Dashboard Admin</div>
+          </div>
+        </div>
+        <h1>Kelola toko kopi Anda dari satu tempat.</h1>
+        <p>Produk, kategori, stok, pesanan, laporan penjualan, dan pengaturan toko.</p>
+        <ul class="login-points">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Perubahan produk langsung tampil di katalog pelanggan.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Pantau stok menipis dan pesanan yang menunggu konfirmasi.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span>Ekspor laporan penjualan ke CSV untuk pembukuan.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="login-form-wrap">
+        <h2>Masuk ke Dashboard</h2>
+        <p>Gunakan akun admin untuk melanjutkan.</p>
+
+        <div class="login-error" id="loginError" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span>Username atau password salah. Silakan coba lagi.</span>
+        </div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="loginUsername">Username</label>
+            <div class="input-wrap">
+              <input type="text" id="loginUsername" placeholder="Masukkan username" autocomplete="username" autocapitalize="none" spellcheck="false" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="loginPassword" placeholder="Masukkan password" autocomplete="current-password" />
+              <button type="button" class="toggle-pass" id="togglePassword" aria-label="Tampilkan password" aria-pressed="false">
+                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit" style="height:44px;margin-top:4px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
+            Login
+          </button>
+        </form>
+
+        <div class="login-hint">
+          <strong>Akun demo:</strong> username <strong>admin</strong> · password <strong>admin</strong>.<br />
+          Kredensial ini hanya untuk demonstrasi. Untuk produksi, autentikasi wajib dipindahkan ke backend dengan password ter-hash dan session yang aman.
+        </div>
+
+        <a class="login-back" href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+          Kembali ke website
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div class="app" id="appView" hidden>
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi dashboard">
+      <div class="sidebar-brand">
+        <img src="assets/logo.svg" alt="Logo toko" id="sidebarLogo" />
+        <div class="sidebar-brand-text">
+          <strong id="sidebarStoreName">Jualan Kopi Gayo</strong>
+          <span>Admin Panel</span>
+        </div>
+      </div>
+
+      <nav class="side-nav">
+        <div class="side-section-label">Menu Utama</div>
+        <button class="side-link active" data-view="dashboard" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="side-link" data-view="produk" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+          <span>Kelola Produk</span>
+        </button>
+        <button class="side-link" data-view="kategori" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.6 13.4L11 3.8A2 2 0 0 0 9.6 3H4a1 1 0 0 0-1 1v5.6a2 2 0 0 0 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.6z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>
+          <span>Kategori Produk</span>
+        </button>
+        <button class="side-link" data-view="stok" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>
+          <span>Stok Produk</span>
+        </button>
+        <button class="side-link" data-view="pesanan" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+          <span>Pesanan</span>
+          <span class="side-badge" id="pendingBadge" hidden>0</span>
+        </button>
+
+        <div class="side-section-label">Analitik &amp; Toko</div>
+        <button class="side-link" data-view="laporan" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+          <span>Laporan Penjualan</span>
+        </button>
+        <button class="side-link" data-view="pengaturan" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+          <span>Pengaturan Toko</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button class="side-link" id="logoutSide" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+          <span>Logout</span>
+        </button>
+        <small>Demo · data lokal browser</small>
+      </div>
+    </aside>
+
+    <div class="overlay-backdrop" id="sidebarOverlay"></div>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button class="btn-icon menu-btn" id="menuToggle" type="button" aria-label="Buka menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <button class="btn-icon menu-btn" id="sidebarCollapse" type="button" aria-label="Ciutkan sidebar" title="Ciutkan sidebar" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <div class="topbar-titles">
+          <h1 id="pageTitle">Ringkasan Dashboard</h1>
+          <p id="pageSubtitle">Pantau performa toko kopi Anda</p>
+        </div>
+        <div class="topbar-right">
+          <div class="clock">
+            <strong id="clockTime">--:--:--</strong>
+            <span id="clockDate">—</span>
+          </div>
+          <div class="admin-chip">
+            <span class="avatar" id="adminAvatar">A</span>
+            <div class="admin-chip-text">
+              <strong id="adminName">Admin</strong>
+              <span>Pemilik toko</span>
+            </div>
+          </div>
+          <button class="btn-icon danger" id="logoutBtn" type="button" aria-label="Logout" title="Logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="view-wrap">
+        <div id="view" class="view" aria-live="polite"></div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-root" id="modalRoot" aria-hidden="true"></div>
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

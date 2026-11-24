@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Botol cold brew kopi Gayo dan gelas es kopi">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3C2A1C"/><stop offset="1" stop-color="#1C120A"/></linearGradient>
+    <linearGradient id="brew6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A4321"/><stop offset="0.6" stop-color="#4A2611"/><stop offset="1" stop-color="#2A1409"/></linearGradient>
+    <linearGradient id="glass6" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F8E9CE" stop-opacity="0.35"/><stop offset="1" stop-color="#F8E9CE" stop-opacity="0.1"/></linearGradient>
+    <radialGradient id="glow6" cx="0.5" cy="0.3" r="0.65"><stop offset="0" stop-color="#E8B77E" stop-opacity="0.28"/><stop offset="1" stop-color="#E8B77E" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg6)"/>
+  <rect width="800" height="800" fill="url(#glow6)"/>
+  <ellipse cx="400" cy="690" rx="280" ry="46" fill="#000" opacity="0.4"/>
+
+  <g>
+    <rect x="300" y="150" width="120" height="26" rx="8" fill="#C9A46B"/>
+    <path d="M318 176 h84 v58 q26 20 26 56 v316 a26 26 0 0 1 -26 26 h-84 a26 26 0 0 1 -26 -26 v-316 q0 -36 26 -56 z" fill="url(#brew6)"/>
+    <path d="M300 290 h116 v300 a20 20 0 0 1 -20 20 h-76 a20 20 0 0 1 -20 -20 z" fill="#3B1D0C" opacity="0.55"/>
+    <rect x="312" y="360" width="92" height="120" rx="8" fill="#F7EBD6"/>
+    <rect x="330" y="382" width="56" height="9" rx="4" fill="#3A2113"/>
+    <rect x="330" y="402" width="72" height="6" rx="3" fill="#A98D6C"/>
+    <rect x="330" y="418" width="46" height="6" rx="3" fill="#A98D6C"/>
+    <circle cx="358" cy="452" r="14" fill="#6F4A2F"/>
+  </g>
+
+  <g>
+    <path d="M480 330 h170 l-18 300 a24 24 0 0 1 -24 22 h-86 a24 24 0 0 1 -24 -22 z" fill="url(#glass6)" stroke="#F1DFC5" stroke-opacity="0.5" stroke-width="4"/>
+    <path d="M494 430 h142 l-13 216 a20 20 0 0 1 -20 18 h-76 a20 20 0 0 1 -20 -18 z" fill="#5A2E15" opacity="0.9"/>
+    <rect x="500" y="452" width="40" height="40" rx="8" fill="#E9F1F5" opacity="0.45" transform="rotate(-14 520 472)"/>
+    <rect x="552" y="486" width="36" height="36" rx="8" fill="#E9F1F5" opacity="0.35" transform="rotate(18 570 504)"/>
+    <rect x="592" y="548" width="32" height="32" rx="7" fill="#E9F1F5" opacity="0.3" transform="rotate(-8 608 564)"/>
+    <ellipse cx="565" cy="432" rx="71" ry="12" fill="#E8D7BE" opacity="0.55"/>
+    <path d="M560 432 v-140" stroke="#E8D7BE" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>

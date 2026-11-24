@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Biji kopi honey process dengan madu">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBF3E1"/><stop offset="1" stop-color="#EBD6B4"/></linearGradient>
+    <linearGradient id="honey5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8B45C"/><stop offset="1" stop-color="#B47A25"/></linearGradient>
+    <linearGradient id="bean5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C08A52"/><stop offset="1" stop-color="#86592D"/></linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg5)"/>
+  <circle cx="400" cy="330" r="250" fill="#D9BE90" opacity="0.3"/>
+  <ellipse cx="400" cy="640" rx="290" ry="60" fill="#8A6A45" opacity="0.16"/>
+  <path d="M140 470 a260 130 0 0 0 520 0 z" fill="#FDF8EE"/>
+  <ellipse cx="400" cy="470" rx="260" ry="110" fill="#F3E7D4"/>
+  <ellipse cx="400" cy="476" rx="228" ry="90" fill="url(#honey5)" opacity="0.9"/>
+
+  <g fill="url(#bean5)" stroke="#5E3B1C" stroke-width="2">
+    <g transform="translate(300 440) rotate(-24)"><ellipse rx="54" ry="76"/><path d="M0 -68 C 22 -22 -22 22 0 68" stroke="#F0D3A2" stroke-width="6" fill="none" opacity="0.7"/></g>
+    <g transform="translate(440 430) rotate(18)"><ellipse rx="50" ry="70"/><path d="M0 -63 C 20 -20 -20 20 0 63" stroke="#F0D3A2" stroke-width="6" fill="none" opacity="0.7"/></g>
+    <g transform="translate(380 520) rotate(40)"><ellipse rx="48" ry="66"/><path d="M0 -59 C 19 -19 -19 19 0 59" stroke="#F0D3A2" stroke-width="6" fill="none" opacity="0.7"/></g>
+  </g>
+
+  <g transform="translate(590 300) rotate(20)">
+    <rect x="-14" y="-10" width="28" height="200" rx="14" fill="#A97435"/>
+    <ellipse cx="0" cy="-30" rx="46" ry="40" fill="#D9A65A"/>
+    <g fill="#B47A25"><circle cx="-22" cy="-22" r="10"/><circle cx="0" cy="-38" r="10"/><circle cx="22" cy="-22" r="10"/><circle cx="0" cy="-12" r="10"/></g>
+  </g>
+  <path d="M552 330 q-20 60 6 96 q22 -32 8 -96 z" fill="#E8B45C" opacity="0.75"/>
+</svg>

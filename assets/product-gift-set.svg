@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Paket oleh-oleh kopi Gayo berisi dua kemasan kopi">
+  <defs>
+    <linearGradient id="bg8" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F5E9D6"/><stop offset="1" stop-color="#DFC8A6"/></linearGradient>
+    <linearGradient id="box8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A6A40"/><stop offset="1" stop-color="#6B4426"/></linearGradient>
+    <linearGradient id="bag8" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7E4E2B"/><stop offset="1" stop-color="#A4713F"/></linearGradient>
+    <linearGradient id="ribbon8" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C9A45E"/><stop offset="1" stop-color="#9E7634"/></linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg8)"/>
+  <circle cx="400" cy="330" r="250" fill="#C6A87C" opacity="0.3"/>
+  <ellipse cx="400" cy="690" rx="270" ry="40" fill="#8A6A45" opacity="0.18"/>
+
+  <g>
+    <path d="M210 300 h180 v250 a20 20 0 0 1 -20 20 h-140 a20 20 0 0 1 -20 -20 z" fill="url(#bag8)"/>
+    <path d="M210 300 q90 -34 180 0 v26 q-90 -30 -180 0 z" fill="#5E3A1E"/>
+    <rect x="228" y="380" width="144" height="96" rx="10" fill="#FBF3E4"/>
+    <rect x="248" y="402" width="70" height="9" rx="4" fill="#3D2818"/>
+    <rect x="248" y="422" width="100" height="6" rx="3" fill="#A9906F"/>
+    <rect x="248" y="438" width="82" height="6" rx="3" fill="#A9906F"/>
+    <rect x="248" y="452" width="52" height="14" rx="7" fill="#3F6B3A"/>
+  </g>
+  <g>
+    <path d="M410 350 h150 v200 a18 18 0 0 1 -18 18 h-114 a18 18 0 0 1 -18 -18 z" fill="url(#bag8)" opacity="0.92"/>
+    <path d="M410 350 q75 -28 150 0 v22 q-75 -25 -150 0 z" fill="#5E3A1E"/>
+    <rect x="426" y="414" width="118" height="80" rx="8" fill="#FBF3E4"/>
+    <rect x="444" y="432" width="62" height="8" rx="4" fill="#3D2818"/>
+    <rect x="444" y="450" width="82" height="5" rx="2.5" fill="#A9906F"/>
+    <rect x="444" y="466" width="46" height="12" rx="6" fill="#8E3B2C"/>
+  </g>
+
+  <path d="M170 630 h460 v46 a16 16 0 0 1 -16 16 h-428 a16 16 0 0 1 -16 -16 z" fill="url(#box8)"/>
+  <path d="M170 630 h460 v18 h-460 z" fill="#A97B4C"/>
+  <path d="M360 552 q40 26 80 0 v78 h-80 z" fill="url(#ribbon8)"/>
+  <g fill="#F0D9AE" opacity="0.9">
+    <circle cx="400" cy="600" r="14"/>
+  </g>
+  <g fill="#4A2A15" opacity="0.5">
+    <circle cx="236" cy="596" r="5"/><circle cx="576" cy="602" r="5"/><circle cx="520" cy="588" r="4"/>
+  </g>
+</svg>
