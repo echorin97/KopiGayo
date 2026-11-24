@@ -12,7 +12,10 @@
     category: 'all',
     sort: 'featured',
     detailId: null,
-    detailQty: 1
+    detailQty: 1,
+    reviewRating: 5,
+    reviewName: '',
+    lastCartCount: 0
   };
 
   var el = {};
@@ -27,6 +30,7 @@
     bindEvents();
     renderCategories();
     renderProducts();
+    renderTicker();
     renderCart();
     document.getElementById('footerYear').textContent = new Date().getFullYear();
   }
@@ -54,6 +58,7 @@
     el.lightbox = document.getElementById('lightbox');
     el.lightboxImage = document.getElementById('lightboxImage');
     el.lightboxCaption = document.getElementById('lightboxCaption');
+    el.ticker = document.getElementById('productTicker');
   }
 
   /* ---------------- Pengaturan toko ---------------- */
@@ -191,6 +196,7 @@
         '</button>' +
         '<div class="product-body">' +
           '<h3 class="product-name">' + S.escapeHtml(product.name) + '</h3>' +
+          ratingMarkup(product.id) +
           '<div class="product-meta"><span>' + S.escapeHtml(product.origin) + '</span><span>·</span><span>' + S.escapeHtml(product.weight) + '</span></div>' +
           '<p class="product-flavor">' + S.escapeHtml(product.flavor) + '</p>' +
           '<div class="product-foot">' +
@@ -222,7 +228,10 @@
     ];
 
     el.productModalContent.innerHTML = '<div class="detail-grid">' +
-      '<div class="detail-media"><img src="' + S.escapeHtml(product.image) + '" alt="' + S.escapeHtml(product.name) + '" /></div>' +
+      '<div class="detail-media" data-action="zoom-image" title="Klik untuk zoom" role="button" tabindex="0" aria-label="Perbesar gambar produk">' +
+        '<img src="' + S.escapeHtml(product.image) + '" alt="' + S.escapeHtml(product.name) + '" />' +
+        '<span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg> Klik gambar untuk zoom</span>' +
+      '</div>' +
       '<div class="detail-body">' +
         '<span class="badge badge-cat" style="position:static;background:#EFE4D2">' + S.escapeHtml(S.categoryName(product.categoryId)) + '</span>' +
         '<h2 style="margin-top:12px">' + S.escapeHtml(product.name) + '</h2>' +
@@ -241,6 +250,7 @@
               '<button class="btn btn-primary" data-action="detail-add">Tambah ke keranjang</button>' +
             '</div>'
           : '<p style="color:#B4372E;font-weight:600;margin:0">Stok habis — produk belum dapat dipesan.</p>') +
+        reviewSection(product) +
       '</div>' +
     '</div>';
 
@@ -255,6 +265,169 @@
     if (node) node.textContent = state.detailQty;
   }
 
+  function toggleZoom(media, event) {
+    var image = media.querySelector('img');
+    if (!image) return;
+    if (media.classList.contains('zoomed')) {
+      media.classList.remove('zoomed');
+      image.style.transformOrigin = '';
+      return;
+    }
+    var rect = media.getBoundingClientRect();
+    var x = ((event.clientX - rect.left) / rect.width) * 100;
+    var y = ((event.clientY - rect.top) / rect.height) * 100;
+    image.style.transformOrigin = Math.min(96, Math.max(4, x)) + '% ' + Math.min(96, Math.max(4, y)) + '%';
+    media.classList.add('zoomed');
+  }
+
+  /* ---------------- Rating, ulasan, laporan ---------------- */
+  function starString(rating) {
+    var full = Math.round(Number(rating) || 0);
+    var out = '';
+    for (var i = 1; i <= 5; i += 1) out += i <= full ? '★' : '☆';
+    return out;
+  }
+
+  function ratingSummary(productId) {
+    var list = S.getReviews(productId).filter(function (review) { return !review.report; });
+    var count = list.length;
+    var total = list.reduce(function (sum, review) { return sum + (Number(review.rating) || 0); }, 0);
+    return { count: count, average: count ? Math.round((total / count) * 10) / 10 : 0 };
+  }
+
+  function ratingMarkup(productId) {
+    var summary = ratingSummary(productId);
+    if (!summary.count) return '<div class="product-rating empty">Belum ada ulasan</div>';
+    return '<div class="product-rating">' +
+      '<span class="stars" aria-hidden="true">' + starString(summary.average) + '</span>' +
+      '<strong>' + summary.average.toFixed(1) + '</strong>' +
+      '<span>(' + summary.count + ')</span>' +
+    '</div>';
+  }
+
+  function reviewSection(product) {
+    var visible = S.getReviews(product.id).filter(function (review) { return !review.report; });
+    var summary = ratingSummary(product.id);
+    var rating = state.reviewRating || 5;
+    var picker = '';
+
+    for (var i = 1; i <= 5; i += 1) {
+      picker += '<button type="button" class="star-btn' + (i <= rating ? ' active' : '') + '"' +
+        ' data-action="rate" data-star="' + i + '" aria-label="' + i + ' bintang" aria-pressed="' + (i <= rating) + '">★</button>';
+    }
+
+    var items = visible.map(function (review) {
+      var id = S.escapeHtml(review.id);
+      return '<li class="review-item">' +
+        '<div class="review-top">' +
+          '<strong>' + S.escapeHtml(review.name) + '</strong>' +
+          '<span class="stars small" aria-hidden="true">' + starString(review.rating) + '</span>' +
+          '<time datetime="' + S.escapeHtml(review.createdAt) + '">' + S.formatDate(review.createdAt) + '</time>' +
+        '</div>' +
+        (review.text ? '<p>' + S.escapeHtml(review.text) + '</p>' : '') +
+        '<button type="button" class="review-report" data-action="report-pick" data-id="' + id + '">Laporkan</button>' +
+        '<div class="report-picker" id="report-' + id + '">' +
+          '<span>Alasan:</span>' +
+          ['Spam / iklan', 'Kata kasar', 'Tidak relevan'].map(function (reason) {
+            return '<button type="button" data-action="report-send" data-id="' + id + '" data-reason="' + S.escapeHtml(reason) + '">' + S.escapeHtml(reason) + '</button>';
+          }).join('') +
+          '<button type="button" class="cancel" data-action="report-cancel" data-id="' + id + '">Batal</button>' +
+        '</div>' +
+      '</li>';
+    }).join('');
+
+    return '<div class="reviews" id="reviewsBlock">' +
+      '<div class="reviews-head">' +
+        '<div><h3>Ulasan &amp; Rating</h3>' +
+        '<p class="reviews-sub">Beri rating, tulis komentar, atau laporkan ulasan yang tidak pantas.</p></div>' +
+        '<div class="rating-summary">' +
+          '<span class="stars" aria-hidden="true">' + starString(summary.average) + '</span>' +
+          '<strong>' + (summary.count ? summary.average.toFixed(1) : '—') + '</strong>' +
+          '<span class="reviews-count">' + summary.count + ' ulasan</span>' +
+        '</div>' +
+      '</div>' +
+      '<form class="review-form" id="reviewForm">' +
+        '<div class="star-picker" role="group" aria-label="Pilih rating">' + picker + '</div>' +
+        '<div class="review-fields">' +
+          '<input type="text" id="reviewName" maxlength="40" placeholder="Nama Anda" autocomplete="name" value="' + S.escapeHtml(state.reviewName) + '" />' +
+          '<textarea id="reviewText" rows="2" maxlength="400" placeholder="Bagaimana rasa dan aromanya?"></textarea>' +
+        '</div>' +
+        '<button type="submit" class="btn btn-primary">Kirim ulasan</button>' +
+      '</form>' +
+      (items
+        ? '<ul class="review-list">' + items + '</ul>'
+        : '<p class="reviews-empty">Jadilah yang pertama memberi rating untuk kopi ini.</p>') +
+    '</div>';
+  }
+
+  function submitReview() {
+    var product = S.getProduct(state.detailId);
+    if (!product) return;
+    var SEC = window.KGSecurity;
+    var nameInput = document.getElementById('reviewName');
+    var textInput = document.getElementById('reviewText');
+    var name = SEC ? SEC.sanitizeText(nameInput.value, 40) : nameInput.value.trim();
+    var text = SEC ? SEC.sanitizeMultiline(textInput.value, 400) : textInput.value.trim();
+
+    if (name.length < 2) {
+      toast('Nama terlalu pendek', 'Isi nama minimal 2 karakter.', 'error');
+      nameInput.focus();
+      return;
+    }
+    if (text.length < 4) {
+      toast('Ulasan terlalu pendek', 'Tulis minimal 4 karakter.', 'error');
+      textInput.focus();
+      return;
+    }
+
+    state.reviewName = name;
+    S.addReview({ productId: product.id, name: name, rating: state.reviewRating || 5, text: text });
+    toast('Terima kasih!', 'Rating dan ulasan Anda sudah tersimpan.', 'success');
+    refreshReviews();
+  }
+
+  function refreshReviews() {
+    if (!state.detailId) return;
+    openDetail(state.detailId);
+    renderProducts();
+    renderTicker();
+    var block = document.getElementById('reviewsBlock');
+    if (block) block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /* ---------------- Produk berjalan ---------------- */
+  function renderTicker() {
+    if (!el.ticker) return;
+    var products = S.getProducts().filter(function (product) { return product.active !== false; }).slice(0, 8);
+    var strip = document.getElementById('productTickerStrip');
+    if (!products.length) {
+      if (strip) strip.hidden = true;
+      return;
+    }
+    if (strip) strip.hidden = false;
+
+    var items = products.map(function (product) {
+      return '<button type="button" class="ticker-item" data-action="detail" data-id="' + S.escapeHtml(product.id) + '">' +
+        '<img src="' + S.escapeHtml(product.image) + '" alt="" loading="lazy" />' +
+        '<span class="ticker-text">' +
+          '<strong>' + S.escapeHtml(product.name) + '</strong>' +
+          '<small>' + S.formatRupiah(product.price) + '</small>' +
+        '</span>' +
+      '</button>';
+    }).join('');
+
+    el.ticker.innerHTML = items + items;
+    Array.prototype.forEach.call(el.ticker.children, function (node, index) {
+      if (index < products.length) {
+        node.style.animationDelay = (index * 0.32).toFixed(2) + 's';
+        node.classList.add('enter');
+      } else {
+        node.setAttribute('aria-hidden', 'true');
+        node.setAttribute('tabindex', '-1');
+      }
+    });
+  }
+
   /* ---------------- Keranjang ---------------- */
   function renderCart() {
     var details = S.cartDetails();
@@ -262,6 +435,12 @@
     var totalPrice = details.reduce(function (sum, item) { return sum + item.subtotal; }, 0);
 
     el.cartCount.textContent = totalQty;
+    if (el.cartCount && state.lastCartCount !== totalQty) {
+      el.cartCount.classList.remove('pop');
+      void el.cartCount.offsetWidth;
+      el.cartCount.classList.add('pop');
+    }
+    state.lastCartCount = totalQty;
     el.cartItemCount.textContent = totalQty + ' produk';
 
     if (!details.length) {
@@ -497,6 +676,53 @@
         renderCategories();
         renderProducts();
       }
+    });
+
+    el.ticker.addEventListener('click', function (event) {
+      var item = event.target.closest('[data-action="detail"]');
+      if (item && item.getAttribute('data-id')) openDetail(item.getAttribute('data-id'));
+    });
+
+    el.productModalContent.addEventListener('click', function (event) {
+      var media = event.target.closest('[data-action="zoom-image"]');
+      if (media) {
+        toggleZoom(media, event);
+        return;
+      }
+      var btn = event.target.closest('[data-action]');
+      if (!btn) return;
+      var action = btn.getAttribute('data-action');
+      var id = btn.getAttribute('data-id');
+
+      if (action === 'rate') {
+        state.reviewRating = Number(btn.getAttribute('data-star')) || 5;
+        Array.prototype.forEach.call(el.productModalContent.querySelectorAll('.star-btn'), function (star) {
+          var value = Number(star.getAttribute('data-star'));
+          star.classList.toggle('active', value <= state.reviewRating);
+          star.setAttribute('aria-pressed', String(value <= state.reviewRating));
+        });
+      }
+      if (action === 'report-pick') {
+        var box = document.getElementById('report-' + id);
+        if (box) box.classList.toggle('open');
+      }
+      if (action === 'report-cancel') {
+        var closeBox = document.getElementById('report-' + id);
+        if (closeBox) closeBox.classList.remove('open');
+      }
+      if (action === 'report-send') {
+        var reported = S.reportReview(id, btn.getAttribute('data-reason'));
+        if (reported) {
+          toast('Laporan diterima', 'Ulasan disembunyikan dan dicatat untuk ditinjau admin.', 'info');
+          refreshReviews();
+        }
+      }
+    });
+
+    el.productModalContent.addEventListener('submit', function (event) {
+      if (!event.target || event.target.id !== 'reviewForm') return;
+      event.preventDefault();
+      submitReview();
     });
 
     document.getElementById('cartBtn').addEventListener('click', openCart);

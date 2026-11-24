@@ -1037,3 +1037,176 @@ h1, h2, h3, h4 {
   color: #5d4c3c;
 }
 .privacy-card .btn { margin-top: 14px; }
+
+/* ---------- Produk berjalan (ticker) ---------- */
+.ticker {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #FFFDF9, #F7ECDD);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+.ticker[hidden] { display: none; }
+.ticker-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: tickerFlow 34s linear infinite;
+}
+.ticker:hover .ticker-track { animation-play-state: paused; }
+.ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 8px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.ticker-item:hover { transform: translateY(-3px) scale(1.03); box-shadow: var(--shadow); border-color: #D3BFA4; }
+.ticker-item:active { transform: scale(.97); }
+.ticker-item img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--cream-2); }
+.ticker-text { display: flex; flex-direction: column; text-align: left; line-height: 1.25; }
+.ticker-text strong { font-size: 12.5px; color: var(--dark); font-weight: 600; white-space: nowrap; }
+.ticker-text small { font-size: 11px; color: var(--coffee-2); font-weight: 600; }
+.ticker-item.enter { animation: tickerIn .45s ease both; }
+@keyframes tickerIn {
+  from { opacity: 0; transform: translateX(-26px) scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes tickerFlow { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.ticker-fade { position: absolute; top: 0; bottom: 0; width: 64px; z-index: 2; pointer-events: none; }
+.ticker-fade.left { left: 0; background: linear-gradient(90deg, #FFFDF9, rgba(255, 253, 249, 0)); }
+.ticker-fade.right { right: 0; background: linear-gradient(270deg, #F7ECDD, rgba(247, 236, 221, 0)); }
+
+/* ---------- Rating ringkas di kartu produk ---------- */
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.product-rating .stars { color: #D79B2E; letter-spacing: 1px; font-size: 12px; }
+.product-rating strong { color: var(--dark); font-size: 12px; }
+.product-rating.empty { font-style: italic; }
+
+/* ---------- Zoom & tombol lebih interaktif ---------- */
+.detail-media { position: relative; overflow: hidden; cursor: zoom-in; }
+.detail-media img { transition: transform .35s ease; will-change: transform; }
+.detail-media.zoomed { cursor: zoom-out; }
+.detail-media.zoomed img { transform: scale(1.9); }
+.zoom-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(27, 17, 10, .72);
+  color: #F6EBDC;
+  font-size: 11.5px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+.zoom-hint svg { width: 14px; height: 14px; }
+.add-btn:active { transform: scale(.9); }
+.product-thumb:active img { transform: scale(1.12); }
+.cart-count.pop { animation: cartPop .4s ease; }
+@keyframes cartPop { 0% { transform: scale(1); } 40% { transform: scale(1.45); } 100% { transform: scale(1); } }
+
+/* ---------- Ulasan, rating, laporan ---------- */
+.reviews { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 20px; }
+.reviews-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.reviews-head h3 { margin: 0 0 4px; font-size: 19px; }
+.reviews-sub { margin: 0; font-size: 12px; color: var(--muted); max-width: 330px; }
+.rating-summary { display: flex; align-items: baseline; gap: 6px; background: var(--cream); border: 1px solid var(--line); border-radius: 14px; padding: 8px 14px; }
+.rating-summary strong { font-family: var(--font-head); font-size: 22px; color: var(--dark); }
+.rating-summary .reviews-count { font-size: 11.5px; color: var(--muted); }
+.stars { color: #D79B2E; letter-spacing: 1px; font-size: 14px; }
+.stars.small { font-size: 12px; }
+.review-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 8px;
+  background: #FFFBF4;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 14px;
+}
+.star-picker { display: flex; gap: 2px; }
+.star-btn {
+  border: none;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: #D9CBB8;
+  padding: 0 1px;
+  transition: transform .15s ease, color .15s ease;
+}
+.star-btn:hover, .star-btn.active { color: #E0A62F; }
+.star-btn:hover { transform: scale(1.18); }
+.star-btn:active { transform: scale(.9); }
+.review-fields { display: flex; gap: 8px; flex: 1 1 280px; flex-wrap: wrap; }
+.review-fields input,
+.review-fields textarea {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 12.5px;
+  background: var(--white);
+  color: var(--ink);
+}
+.review-fields input { flex: 0 1 150px; }
+.review-fields textarea { flex: 1 1 200px; resize: vertical; min-height: 40px; }
+.review-fields input:focus,
+.review-fields textarea:focus { outline: 2px solid rgba(200, 155, 90, .55); outline-offset: 1px; }
+.review-form .btn { padding: 10px 16px; font-size: 12.5px; }
+.review-list { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+.review-item { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: #FFFDF9; }
+.review-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; }
+.review-top strong { color: var(--dark); }
+.review-top time { margin-left: auto; color: var(--muted); font-size: 11px; }
+.review-item p { margin: 6px 0 4px; font-size: 12.5px; color: #5E4C3C; }
+.review-report { border: none; background: none; color: var(--muted); font-size: 11px; padding: 2px 0; text-decoration: underline; }
+.review-report:hover { color: var(--red); }
+.report-picker { display: none; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+.report-picker.open { display: flex; }
+.report-picker button {
+  border: 1px solid var(--line);
+  background: var(--white);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--ink);
+}
+.report-picker button:hover { border-color: #D3BFA4; background: var(--cream); }
+.report-picker button.cancel { color: var(--muted); }
+.reviews-empty { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
+
+@media (max-width: 720px) {
+  .ticker { padding: 11px 0; }
+  .ticker-item { padding: 6px 13px 6px 6px; }
+  .ticker-item img { width: 36px; height: 36px; }
+  .ticker-text strong { font-size: 11.5px; }
+  .ticker-fade { width: 34px; }
+  .reviews-head { flex-direction: column; }
+  .rating-summary { width: 100%; justify-content: center; }
+  .review-form { padding: 12px; }
+  .review-fields { flex: 1 1 100%; }
+  .review-fields input { flex: 1 1 100%; }
+  .review-form .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track, .ticker-item.enter, .cart-count.pop { animation: none !important; }
+  .detail-media img, .product-thumb img { transition: none; }
+}

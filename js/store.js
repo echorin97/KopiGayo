@@ -12,6 +12,7 @@
     orders: 'kg_orders',
     settings: 'kg_settings',
     cart: 'kg_cart',
+    reviews: 'kg_reviews',
     seeded: 'kg_seeded'
   };
 
@@ -347,6 +348,44 @@
     return getOrders().filter(function (o) { return o.status === 'selesai'; });
   }
 
+  /* ---------- Ulasan & rating ---------- */
+  function getReviews(productId) {
+    var list = read(KEYS.reviews, []);
+    if (!Array.isArray(list)) return [];
+    list = list.filter(function (review) { return review && typeof review === 'object'; });
+    return productId ? list.filter(function (review) { return review.productId === productId; }) : list;
+  }
+
+  function addReview(data) {
+    var list = getReviews();
+    var now = new Date();
+    var record = {
+      id: 'UL-' + now.getTime().toString(36),
+      productId: String(data.productId || ''),
+      name: String(data.name || 'Pelanggan').slice(0, 40),
+      rating: Math.min(5, Math.max(1, Math.round(Number(data.rating) || 5))),
+      text: String(data.text || '').slice(0, 400),
+      createdAt: now.toISOString(),
+      report: null
+    };
+    list.unshift(record);
+    write(KEYS.reviews, list);
+    return record;
+  }
+
+  function reportReview(id, reason) {
+    var list = getReviews();
+    var found = null;
+    list.forEach(function (review) {
+      if (review.id === id && !review.report) {
+        review.report = { reason: String(reason || 'Tidak sesuai').slice(0, 60), at: new Date().toISOString() };
+        found = review;
+      }
+    });
+    if (found) write(KEYS.reviews, list);
+    return found;
+  }
+
   /* ---------- Pengaturan ---------- */
   function getSettings() {
     return Object.assign({}, window.KG_SEED.settings, read(KEYS.settings, {}));
@@ -432,6 +471,9 @@
     addOrder: addOrder,
     updateOrderStatus: updateOrderStatus,
     completedOrders: completedOrders,
+    getReviews: getReviews,
+    addReview: addReview,
+    reportReview: reportReview,
     getSettings: getSettings,
     saveSettings: saveSettings,
     formatRupiah: formatRupiah,
