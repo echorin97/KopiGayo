@@ -15,6 +15,8 @@
     detailQty: 1,
     reviewRating: 5,
     reviewName: '',
+    roast: 'medium',
+    roastId: null,
     lastCartCount: 0
   };
 
@@ -31,6 +33,8 @@
     renderCategories();
     renderProducts();
     renderTicker();
+    renderRoast();
+    initJourney();
     renderCart();
     document.getElementById('footerYear').textContent = new Date().getFullYear();
   }
@@ -59,6 +63,17 @@
     el.lightboxImage = document.getElementById('lightboxImage');
     el.lightboxCaption = document.getElementById('lightboxCaption');
     el.ticker = document.getElementById('productTicker');
+    el.roastTabs = document.getElementById('roastTabs');
+    el.roastFrame = document.getElementById('roastFrame');
+    el.roastImage = document.getElementById('roastImage');
+    el.roastBadge = document.getElementById('roastBadge');
+    el.roastName = document.getElementById('roastName');
+    el.roastNotes = document.getElementById('roastNotes');
+    el.roastBrew = document.getElementById('roastBrew');
+    el.roastWeight = document.getElementById('roastWeight');
+    el.roastPrice = document.getElementById('roastPrice');
+    el.roastPriceNote = document.getElementById('roastPriceNote');
+    el.roastAdd = document.getElementById('roastAdd');
   }
 
   /* ---------------- Pengaturan toko ---------------- */
@@ -190,7 +205,7 @@
       var soldOut = product.stock <= 0;
       return '<article class="product-card">' +
         '<button class="product-thumb" data-action="detail" data-id="' + S.escapeHtml(product.id) + '" aria-label="Lihat detail ' + S.escapeHtml(product.name) + '">' +
-          '<img src="' + S.escapeHtml(product.image) + '" alt="' + S.escapeHtml(product.name) + '" loading="lazy" />' +
+          '<img src="' + S.escapeHtml(product.image) + '" alt="' + S.escapeHtml(product.name) + '" data-thumb-id="' + S.escapeHtml(product.id) + '" loading="lazy" />' +
           '<span class="badge badge-cat">' + S.escapeHtml(categoryName) + '</span>' +
           stockBadge(product) +
         '</button>' +
@@ -212,7 +227,7 @@
   }
 
   /* ---------------- Detail produk ---------------- */
-  function openDetail(id) {
+  function openDetail(id, originImg) {
     var product = S.getProduct(id);
     if (!product) return;
     state.detailId = id;
@@ -254,7 +269,55 @@
       '</div>' +
     '</div>';
 
-    openModal(el.productModal);
+    if (canMorph(originImg)) {
+      document.documentElement.classList.add('morphing');
+      originImg.style.viewTransitionName = 'product-morph';
+      var transition = document.startViewTransition(function () {
+        originImg.style.viewTransitionName = '';
+        openModal(el.productModal);
+        var target = el.productModal.querySelector('.detail-media img');
+        if (target) target.style.viewTransitionName = 'product-morph';
+      });
+      var cleanup = function () {
+        document.documentElement.classList.remove('morphing');
+        var target = el.productModal.querySelector('.detail-media img');
+        if (target) target.style.viewTransitionName = '';
+      };
+      if (transition && transition.finished) transition.finished.finally(cleanup);
+      else cleanup();
+    } else {
+      openModal(el.productModal);
+    }
+  }
+
+  function closeDetail() {
+    var modalImage = el.productModal.querySelector('.detail-media img');
+    var cardImage = state.detailId ? document.querySelector('[data-thumb-id="' + state.detailId + '"]') : null;
+    if (!canMorph(modalImage) || !cardImage) {
+      closeModals();
+      return;
+    }
+    document.documentElement.classList.add('morphing');
+    modalImage.style.viewTransitionName = 'product-morph';
+    var transition = document.startViewTransition(function () {
+      modalImage.style.viewTransitionName = '';
+      closeModals();
+      cardImage.style.viewTransitionName = 'product-morph';
+    });
+    var cleanup = function () {
+      document.documentElement.classList.remove('morphing');
+      cardImage.style.viewTransitionName = '';
+    };
+    if (transition && transition.finished) transition.finished.finally(cleanup);
+    else cleanup();
+  }
+
+  function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function canMorph(originImg) {
+    return !!originImg && typeof document.startViewTransition === 'function' && !prefersReducedMotion();
   }
 
   function updateDetailQty(delta) {
@@ -429,6 +492,99 @@
   }
 
   /* ---------------- Keranjang ---------------- */
+  /* ---------------- Pemilih tingkat sangrai ---------------- */
+  var ROAST_LEVELS = [
+    { key: 'light', label: 'Light', brew: 'V60 · Chemex · Aeropress' },
+    { key: 'medium', label: 'Medium', brew: 'V60 · Aeropress · Espresso' },
+    { key: 'dark', label: 'Dark', brew: 'Tubruk · Moka pot · Susu' }
+  ];
+
+  function roastKeyOf(product) {
+    var roast = String(product.roast || '').toLowerCase();
+    if (roast.indexOf('dark') > -1) return 'dark';
+    if (roast.indexOf('light') > -1) return 'light';
+    return 'medium';
+  }
+
+  function renderRoast() {
+    if (!el.roastTabs) return;
+    var level = ROAST_LEVELS.filter(function (item) { return item.key === state.roast; })[0] || ROAST_LEVELS[1];
+    var products = S.getProducts().filter(function (product) { return product.active !== false; });
+    var matches = products.filter(function (product) { return roastKeyOf(product) === level.key; });
+    var product = matches.filter(function (item) { return item.stock > 0; })[0] || matches[0];
+    if (!product) {
+      state.roastId = null;
+      el.roastName.textContent = 'Belum tersedia';
+      el.roastNotes.textContent = 'Belum ada produk untuk tingkat sangrai ini.';
+      el.roastAdd.disabled = true;
+      el.roastAdd.textContent = 'Belum tersedia';
+      return;
+    }
+    state.roastId = product.id;
+
+    if (el.roastFrame) {
+      el.roastFrame.classList.add('swapping');
+      window.setTimeout(function () {
+        if (el.roastFrame) el.roastFrame.classList.remove('swapping');
+      }, 240);
+    }
+
+    el.roastImage.src = product.image;
+    el.roastImage.alt = 'Biji kopi ' + product.name + ', sangrai ' + product.roast;
+    el.roastBadge.textContent = product.roast + ' roast';
+    el.roastName.textContent = product.name;
+    el.roastNotes.textContent = product.flavor;
+    el.roastBrew.textContent = level.brew;
+    el.roastWeight.textContent = product.weight;
+    el.roastPrice.textContent = S.formatRupiah(product.price);
+    el.roastPriceNote.textContent = 'per ' + product.weight;
+
+    var soldOut = product.stock <= 0;
+    el.roastAdd.disabled = soldOut;
+    el.roastAdd.textContent = soldOut ? 'Stok habis' : 'Tambah ke keranjang';
+
+    Array.prototype.forEach.call(el.roastTabs.querySelectorAll('[data-roast]'), function (tab) {
+      var active = tab.getAttribute('data-roast') === level.key;
+      tab.classList.toggle('is-active', active);
+      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+  }
+
+  /* ---------------- Perjalanan kopi (scroll) ---------------- */
+  function initJourney() {
+    var journey = document.getElementById('journey');
+    if (!journey) return;
+    var steps = Array.prototype.slice.call(journey.querySelectorAll('.journey-step'));
+    var images = Array.prototype.slice.call(journey.querySelectorAll('.journey-image'));
+    var tag = document.getElementById('journeyTag');
+    var progress = document.getElementById('journeyProgress');
+    if (!steps.length) return;
+
+    function activate(index) {
+      steps.forEach(function (step, i) {
+        step.classList.toggle('is-active', i === index);
+        if (images[i]) images[i].classList.toggle('is-active', i === index);
+      });
+      if (tag) {
+        var label = steps[index].getAttribute('data-label') || '';
+        tag.textContent = ('0' + (index + 1)).slice(-2) + ' · ' + label;
+      }
+      if (progress) progress.style.width = (((index + 1) / steps.length) * 100) + '%';
+    }
+
+    activate(0);
+    if (!('IntersectionObserver' in window)) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        activate(Number(entry.target.getAttribute('data-step')) || 0);
+      });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+    steps.forEach(function (step) { observer.observe(step); });
+  }
+
   function renderCart() {
     var details = S.cartDetails();
     var totalQty = details.reduce(function (sum, item) { return sum + item.qty; }, 0);
@@ -660,7 +816,7 @@
       if (!actionBtn) return;
       var action = actionBtn.getAttribute('data-action');
       var id = actionBtn.getAttribute('data-id');
-      if (action === 'detail' && id) openDetail(id);
+      if (action === 'detail' && id) openDetail(id, actionBtn.querySelector('img'));
       if (action === 'add' && id) {
         var result = S.addToCart(id, 1);
         toast(result.ok ? 'Ditambahkan ke keranjang' : 'Tidak dapat menambahkan', result.message, result.ok ? 'success' : 'error');
@@ -680,7 +836,7 @@
 
     el.ticker.addEventListener('click', function (event) {
       var item = event.target.closest('[data-action="detail"]');
-      if (item && item.getAttribute('data-id')) openDetail(item.getAttribute('data-id'));
+      if (item && item.getAttribute('data-id')) openDetail(item.getAttribute('data-id'), item.querySelector('img'));
     });
 
     el.productModalContent.addEventListener('click', function (event) {
@@ -724,6 +880,27 @@
       event.preventDefault();
       submitReview();
     });
+
+    if (el.roastTabs) {
+      el.roastTabs.addEventListener('click', function (event) {
+        var tab = event.target.closest('[data-roast]');
+        if (!tab) return;
+        state.roast = tab.getAttribute('data-roast');
+        renderRoast();
+      });
+    }
+
+    if (el.roastAdd) {
+      el.roastAdd.addEventListener('click', function () {
+        if (!state.roastId) return;
+        var result = S.addToCart(state.roastId, 1);
+        toast(result.ok ? 'Ditambahkan ke keranjang' : 'Tidak dapat menambahkan', result.message, result.ok ? 'success' : 'error');
+        if (result.ok) {
+          renderCart();
+          openCart();
+        }
+      });
+    }
 
     document.getElementById('cartBtn').addEventListener('click', openCart);
     document.getElementById('closeCart').addEventListener('click', closeCart);
@@ -802,7 +979,11 @@
     });
 
     document.querySelectorAll('[data-close-modal]').forEach(function (btn) {
+      if (btn.closest('#productModal')) return;
       btn.addEventListener('click', closeModals);
+    });
+    el.productModal.querySelectorAll('[data-close-modal]').forEach(function (btn) {
+      btn.addEventListener('click', closeDetail);
     });
 
     document.getElementById('galleryGrid').addEventListener('click', function (event) {
@@ -830,6 +1011,7 @@
       if (event.key && event.key.indexOf('kg_') === 0) {
         renderCategories();
         renderProducts();
+        renderRoast();
         renderCart();
         applySettings();
       }
